@@ -1,0 +1,44 @@
+{
+  "name": "aivera-lite",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AIVERA Lite: AI-assisted security assessment platform (simplified final project version)",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run server\" \"vite\"",
+    "web": "vite",
+    "server": "tsx watch --tsconfig server/tsconfig.json server/src/index.ts",
+    "start": "tsx --tsconfig server/tsconfig.json server/src/index.ts",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b && tsc -p server/tsconfig.json",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:setup": "prisma db push"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "express": "^5.1.0",
+    "fast-xml-parser": "^5.12.0",
+    "helmet": "^8.1.0",
+    "lucide-react": "^0.525.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.16.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "concurrently": "^9.2.0",
+    "prisma": "^7.10.1",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4"
+  }
+}
