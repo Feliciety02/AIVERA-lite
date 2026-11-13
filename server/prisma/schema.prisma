@@ -1,0 +1,94 @@
+// AIVERA Lite database (SQLite). Text columns hold the small fixed value lists
+// noted next to them, so the schema stays readable.
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// 01 Define scope: a pasted website link, who approved testing it, and what is off limits.
+model Target {
+  id            String    @id @default(cuid())
+  name          String
+  url           String
+  approval      String    // who gave written permission, and when
+  outOfScope    String    @default("") // one path per line that must never be requested
+  createdAt     DateTime  @default(now())
+  scans         Scan[]
+  findings      Finding[]
+  reports       Report[]
+}
+
+// 02 Reconnaissance and 03 Scanning: one row per "Scan" click. Each tool is a step.
+model Scan {
+  id         String    @id @default(cuid())
+  targetId   String
+  status     String    @default("running") // running | done | failed
+  steps      String    @default("[]") // [{ tool, status, summary, output }] as JSON
+  recon      String    @default("{}") // DNS records, open ports, endpoints as JSON
+  aiSummary  String    @default("") // AI interpretation of this scan, as JSON
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  target     Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  findings   Finding[]
+}
+
+// 04 Assessment, 06 Verification and 07 Risk assessment.
+model Finding {
+  id             String    @id @default(cuid())
+  targetId       String
+  scanId         String?
+  title          String
+  category       String    // config_https | session | exposed_files | info_disclosure | other
+  severity       String    // critical | high | medium | low | info
+  source         String    // the tool that reported it, or "manual"
+  affectedUrl    String
+  description    String
+  evidence       String
+  recommendation String
+  status         String    @default("unverified") // unverified | confirmed | rejected
+  likelihood     String?   // low | medium | high, set by the assessor
+  impact         String?   // low | medium | high, set by the assessor
+  verifierNote   String    @default("")
+  verifiedAt     DateTime?
+  aiAnalysis     String    @default("") // AI explanation and fix suggestion, as JSON
+  createdAt      DateTime  @default(now())
+  target         Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  scan           Scan?     @relation(fields: [scanId], references: [id], onDelete: SetNull)
+
+  @@unique([targetId, title, affectedUrl])
+}
+
+// 08 Report generation. The report always shows the website's current confirmed findings.
+model Report {
+  id        String   @id @default(cuid())
+  targetId  String
+  title     String
+  summary   String   @default("") // executive summary, drafted by AI and edited by the assessor
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  target    Target   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+}
+
+// Every AI request: what was sent (after redaction) and what came back.
+model AiLog {
+  id         String   @id @default(cuid())
+  task       String   // interpret_scan | explain_finding | report_summary
+  model      String
+  sentText   String
+  output     String
+  redactions Int
+  createdAt  DateTime @default(now())
+}
+
+// Activity log, kept as evidence of what was tested and when.
+model Activity {
+  id        String   @id @default(cuid())
+  action    String
+  detail    String
+  createdAt DateTime @default(now())
+}
