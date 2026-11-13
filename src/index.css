@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0b57d0;
+  --color-primary-hover: #0842a0;
+  --color-primary-soft: #e8f0fe;
+  --font-sans: "Roboto", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, Consolas, Menlo, monospace;
+  --color-landing-accent: #0a84d6;
+  --color-landing-deep: #1d4ed8;
+  --color-success: #188038;
+  --color-warning: #f59e0b;
+}
+
+/* Values the landing page effects read directly. */
+:root {
+  --landing-accent: #0a84d6;
+  --landing-deep: #1d4ed8;
+  --success: #188038;
+  --border: #e2e8f0;
+  --card: #ffffff;
+}
+
+body {
+  background: #f6f8fc;
+  color: #1f1f1f;
+}
+
+/* Report printing: hide the site around the report and keep sections together. */
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .print-break { break-inside: avoid; }
+  @page { margin: 16mm; }
+}
+
+/* ------------------------------ Landing page ------------------------------
+ * Theme aware: colours come from the light/dark tokens and the logo palette. */
+.landing-grid {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.55;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 25%, transparent 70%);
+}
+.landing-gradient-text {
+  background: linear-gradient(90deg, #06b6d4, var(--landing-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hand drawn underline that draws itself once. */
+.landing-draw { stroke-dasharray: 340; stroke-dashoffset: 340; animation: landing-draw 1.1s 0.4s ease-out forwards; }
+@keyframes landing-draw { to { stroke-dashoffset: 0; } }
+
+/* Nav links get a sliding underline. */
+.landing-navlink { position: relative; }
+.landing-navlink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px;
+  background: var(--landing-accent); transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.landing-navlink:hover::after { transform: scaleX(1); }
+
+/* A light sheen that passes over primary buttons. */
+.landing-shine { position: relative; overflow: hidden; }
+.landing-shine::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-120%) skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: landing-shine 4.5s ease-in-out infinite;
+}
+@keyframes landing-shine { 0%, 65% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(220%) skewX(-20deg); } }
+
+/* Floating cards beside the radar. */
+.landing-float { animation: landing-float 6s ease-in-out infinite; }
+@keyframes landing-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Radar */
+.landing-radar-face {
+  background: radial-gradient(circle, color-mix(in srgb, var(--landing-accent) 7%, var(--card)) 0%, var(--card) 70%);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--landing-accent) 7%, transparent), 0 20px 60px -20px color-mix(in srgb, var(--landing-accent) 35%, transparent);
+}
+.landing-radar-wedge {
+  background: conic-gradient(from 0deg, color-mix(in srgb, var(--landing-accent) 40%, transparent) 0deg, color-mix(in srgb, var(--landing-accent) 10%, transparent) 40deg, transparent 75deg);
+  transform: scaleX(-1);
+}
+.landing-radar-sweep { animation: landing-sweep linear infinite; }
+@keyframes landing-sweep { to { transform: rotate(360deg); } }
+.landing-blip { opacity: 0.25; animation: landing-blip ease-out infinite; }
+@keyframes landing-blip {
+  0% { opacity: 1; transform: scale(1.4); }
+  60% { opacity: 0.35; transform: scale(1); }
+  100% { opacity: 0.25; transform: scale(1); }
+}
+.landing-blip-ring { opacity: 0; animation: landing-blip-ring ease-out infinite; }
+@keyframes landing-blip-ring {
+  0% { opacity: 0.7; transform: scale(1); }
+  30% { opacity: 0; transform: scale(4); }
+  100% { opacity: 0; transform: scale(4); }
+}
+.landing-blip-label { opacity: 0.55; animation: landing-blip-label ease-out infinite; }
+@keyframes landing-blip-label { 0% { opacity: 1; } 70% { opacity: 0.55; } 100% { opacity: 0.55; } }
+
+/* Terminal */
+.landing-scanline {
+  background: linear-gradient(to bottom, transparent 0%, rgba(34, 211, 238, 0.08) 50%, transparent 100%);
+  background-size: 100% 120px;
+  background-repeat: no-repeat;
+  animation: landing-scan 4s linear infinite;
+}
+@keyframes landing-scan { from { background-position: 0 -120px; } to { background-position: 0 440px; } }
+.landing-cursor { animation: landing-blink 1s steps(1) infinite; }
+@keyframes landing-blink { 50% { opacity: 0; } }
+.landing-line-in { animation: landing-line 0.25s ease-out both; }
+@keyframes landing-line { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+
+/* Pulses */
+.landing-pulse { animation: landing-pulse 2s infinite; }
+@keyframes landing-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--landing-accent) 55%, transparent); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.landing-pulse-success { animation: landing-pulse-success 2s infinite; }
+@keyframes landing-pulse-success {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 60%, transparent); }
+  70% { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-radar-sweep, .landing-blip, .landing-blip-ring, .landing-blip-label, .landing-scanline, .landing-cursor, .landing-line-in,
+  .landing-pulse, .landing-pulse-success, .landing-float, .landing-shine::after { animation: none; }
+  .landing-blip, .landing-blip-label { opacity: 1; }
+  .landing-draw { animation: none; stroke-dashoffset: 0; }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Scroll driven motion. The animation follows the scroll position itself     */
+/* (scrubbed, reversible), not a timer. Browsers without scroll timelines and */
+/* people who prefer reduced motion simply see everything in place.           */
+/* ------------------------------------------------------------------------- */
+/* Hidden (scale 0) unless the page actually scrolls and the browser supports scroll timelines. */
+.sr-progress { transform: scaleX(0); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sr-rise, .sr-blur, .sr-clip, .sr-tilt, .sr-slide, .sr-zoom, .sr-soft {
+      animation-fill-mode: both;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      animation-timeline: view();
+      animation-range: entry calc(var(--sr-i, 0) * 6%) cover calc(28% + var(--sr-i, 0) * 6%);
+    }
+    .sr-rise { animation-name: sr-rise; }
+    .sr-blur { animation-name: sr-blur; }
+    .sr-clip { animation-name: sr-clip; animation-range: entry 0% cover 45%; }
+    .sr-tilt { animation-name: sr-tilt; transform-origin: 50% 100%; }
+    .sr-slide { animation-name: sr-slide; }
+    .sr-zoom { animation-name: sr-zoom; animation-range: entry 0% cover 40%; }
+    .sr-soft { animation-name: sr-soft; animation-range: entry 0% cover 18%; }
+
+    /* Hero content eases away as it leaves the screen. */
+    .sr-exit { animation: sr-exit linear both; animation-timeline: view(); animation-range: exit 0% exit 100%; }
+    /* Slower drift for decorative pieces. */
+    .sr-parallax { animation: sr-parallax linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    /* A line that fills as its section scrolls past. */
+    .sr-line { transform-origin: left; animation: sr-line linear both; animation-timeline: view(); animation-range: entry 20% cover 60%; }
+    /* Reading progress for the whole page. */
+    .sr-progress { transform-origin: left; animation: sr-line linear both; animation-timeline: scroll(root block); }
+  }
+}
+@keyframes sr-rise { from { opacity: 0; transform: translateY(48px) scale(0.97); } }
+@keyframes sr-blur { from { opacity: 0; filter: blur(10px); transform: translateY(16px); } }
+@keyframes sr-clip { from { clip-path: inset(0 0 100% 0 round 24px); transform: translateY(24px); } to { clip-path: inset(0 0 0 0 round 24px); } }
+@keyframes sr-tilt { from { opacity: 0; transform: perspective(900px) rotateX(22deg) translateY(40px); } }
+@keyframes sr-slide { from { opacity: 0; transform: translateX(-40px); } }
+@keyframes sr-zoom { from { opacity: 0.2; transform: scale(0.9); border-radius: 64px; } }
+@keyframes sr-soft { from { opacity: 0; transform: translateY(14px); } }
+@keyframes sr-exit { to { opacity: 0.15; transform: translateY(-40px) scale(0.97); } }
+@keyframes sr-parallax { from { transform: translateY(40px); } to { transform: translateY(-60px); } }
+@keyframes sr-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
